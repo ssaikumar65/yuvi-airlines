@@ -227,10 +227,17 @@ th {
   vertical-align: middle !important;
 }
 .layout {
+  position: relative;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+.bgg {
+  background: url("./assets/bg.jpg") no-repeat center;
+  background-size: cover;
+  position: fixed;
+  inset: 0;
 }
 
 .home {
@@ -242,6 +249,7 @@ th {
   align-items: center;
   justify-content: center;
 }
+
 .login form {
   display: flex;
   flex-direction: column;

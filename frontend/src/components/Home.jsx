@@ -1,7 +1,6 @@
 import { Navigate } from "react-router-dom";
-import Login from "../components/Login.jsx";
-import Register from "../components/Register.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import AuthForm from "./AuthForm";
 
 const Home = () => {
   const { user } = useAuth();
@@ -9,8 +8,8 @@ const Home = () => {
     <Navigate to={"/viewFlights"} />
   ) : (
     <div className="home">
-      <Login />
-      <Register />
+      <AuthForm type="login" />
+      <AuthForm type="register" />
     </div>
   );
 };

@@ -39,18 +39,45 @@ const ViewAllFlights = () => {
           {flights.map((flight) => (
             <div className="col-md-4 col-sm-6 mb-3" key={flight.flightId}>
               <div className="card col">
-                <div className="card-header">{flight.aircraftName}</div>
-                <div className="card-body">
-                  <h5 className="card-title">Flight Id : {flight.flightId}</h5>
-                  <p className="card-text">Fare : Rs. {flight.fare}</p>
-                  <button
-                    className="btn btn-primary btn-md btn-block"
-                    onClick={() => {
-                      navigate("/bookFlight/" + flight.flightId);
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                  className="card-header"
+                >
+                  <span>{flight.aircraftName}</span>
+                  <span
+                    style={{
+                      color:
+                        flight.status.toLowerCase() === "cancelled"
+                          ? "red"
+                          : "green",
                     }}
                   >
-                    Book
-                  </button>
+                    {flight.status}
+                  </span>
+                </div>
+                <div className="card-body">
+                  <h5 className="card-title">Flight Id : {flight.flightId}</h5>
+                  <p className="card-text">
+                    {flight.source} {" -----> "} {flight.destination}
+                  </p>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <button
+                      disabled={flight.status.toLowerCase() === "cancelled"}
+                      className="btn btn-primary btn-md btn-block"
+                      onClick={() => {
+                        navigate("/bookFlight/" + flight.flightId);
+                      }}
+                    >
+                      Book
+                    </button>
+                    <span style={{ fontSize: "24px" }}>₹{flight.fare}</span>
+                  </div>
                 </div>
               </div>
             </div>

@@ -2,8 +2,24 @@ import asyncHandler from "express-async-handler";
 import Flight from "../models/flight.js";
 
 export const createFlight = asyncHandler(async (req, res) => {
-  const { flightId, aircraftName, fare, availableSeats, status } = req.body;
-  if (!flightId || !aircraftName || !fare || !availableSeats || !status) {
+  const {
+    flightId,
+    aircraftName,
+    fare,
+    availableSeats,
+    status,
+    source,
+    destination,
+  } = req.body;
+  if (
+    !flightId ||
+    !aircraftName ||
+    !fare ||
+    !availableSeats ||
+    !status ||
+    !source ||
+    !destination
+  ) {
     res.status(400);
     throw new Error("Please add all the fields");
   }
@@ -14,6 +30,8 @@ export const createFlight = asyncHandler(async (req, res) => {
     fare,
     availableSeats,
     status,
+    source,
+    destination,
   });
   if (flight) {
     res.status(201).json(flight);
