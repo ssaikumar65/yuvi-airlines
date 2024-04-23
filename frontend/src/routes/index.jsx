@@ -5,6 +5,7 @@ import GetBooking from "../components/GetBooking.jsx";
 import CreateBooking from "../components/CreateBooking.jsx";
 import ProtectedRoute from "../routes/ProtectedRoute.jsx";
 import Home from "../components/Home.jsx";
+import PaymentForm from "../components/PaymentForm.jsx";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "/viewBookings",
         element: <ProtectedRoute component={GetBooking} />,
+      },
+      {
+        path: "/bookFlight/payment",
+        element: <ProtectedRoute component={PaymentForm} />,
       },
       {
         path: "/bookFlight/:flightId",

@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-const bookingUrl = "http://localhost:5000/api/bookings";
 const flightUrl = "http://localhost:5000/api/flights";
 
 const CreateBooking = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const flightId = location.pathname.split("/")[2];
   const [flight, setFlight] = useState({});
@@ -32,7 +32,6 @@ const CreateBooking = () => {
   });
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     fetchFlight();
@@ -58,36 +57,11 @@ const CreateBooking = () => {
       });
   };
 
-  const submitBooking = () => {
-    const bookingCost = flight.fare * form.noOfTickets;
-
-    const newForm = {
-      customerId: user.username,
-      flightId: form.flightId,
-      noOfTickets: form.noOfTickets,
-      bookingCost,
-    };
-
-    axios
-      .post(bookingUrl, newForm)
-      .then(() => {
-        setSuccessMessage("Booking done successfully!!");
-        setErrorMessage("");
-      })
-      .catch((error) => {
-        if (error.response === undefined) {
-          setErrorMessage("Something went wrong");
-          setSuccessMessage("");
-        } else if (error.response.status === 404) {
-          setErrorMessage("Booking Failed!");
-          setSuccessMessage("");
-        }
-      });
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
-    submitBooking();
+    navigate("/bookFlight/payment", {
+      state: { flight, noOfTickets: form.noOfTickets },
+    });
   };
 
   const handleChange = (event) => {
@@ -140,6 +114,9 @@ const CreateBooking = () => {
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
                   <span>Flight Name : {form.aircraftName}</span>
+                  <p className="card-text">
+                    {flight.source} {" -----> "} {flight.destination}
+                  </p>
                 </div>
 
                 <div className="form-group">
@@ -171,7 +148,7 @@ const CreateBooking = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="bookingCost">No of tickets:</label>
+                  <label htmlFor="bookingCost">Fare:</label>
                   <input
                     type="number"
                     name="bookingCost"
@@ -208,18 +185,11 @@ const CreateBooking = () => {
                     className="btn btn-primary"
                     id="bookingBtn"
                   >
-                    Book Flight
+                    Checkout
                   </button>
                 </div>
               </form>
               <div align="center">
-                <span
-                  name="successMessage"
-                  id="successMessage"
-                  className="text text-success"
-                >
-                  {successMessage}
-                </span>
                 <span
                   name="errorMessage"
                   id="errorMessage"

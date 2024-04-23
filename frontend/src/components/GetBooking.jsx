@@ -18,13 +18,13 @@ const GetBookings = () => {
     axios
       .get(url + "/user/" + user.username)
       .then((response) => {
-        const data = response.data;
-        setBookingData(data);
+        setBookingData(response.data);
         setErrorMessage("");
         setIsLoading(false);
       })
       .catch((error) => {
         if (error.response.status === 500) {
+          setBookingData([]);
           setErrorMessage("Bookings not found");
         } else if (error.response.status === 404) {
           setErrorMessage("Could not fetch booking data!");
@@ -39,8 +39,8 @@ const GetBookings = () => {
     axios
       .delete(url + "/" + id)
       .then(() => {
-        fetchBooking();
         setSuccessMessage("Booking deleted successfully!!");
+        fetchBooking();
       })
       .catch((error) => {
         if (error.response === undefined) {
