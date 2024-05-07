@@ -52,9 +52,45 @@ export const loginUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       username: user.username,
+      isAdmin: user.isAdmin,
     });
   } else {
     res.status(401);
     throw new Error("Invalid username or password");
+  }
+});
+
+export const registerAdminUser = asyncHandler(async (req, res) => {
+  const { name, username, password } = req.body;
+  if (!name || !username || !password) {
+    res.status(400);
+    throw new Error("Please enter all fields");
+  }
+
+  const userExists = await User.findOne({ username });
+  if (userExists) {
+    res.status(400);
+    throw new Error("User already exists");
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  const user = await User.create({
+    name,
+    username,
+    password: hashedPassword,
+    isAdmin: true,
+  });
+  if (user) {
+    res.status(201).json({
+      id: user._id,
+      name: user.name,
+      username: user.username,
+      isAdmin: user.isAdmin,
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid user data");
   }
 });

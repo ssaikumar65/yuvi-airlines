@@ -56,3 +56,22 @@ export const deleteBooking = asyncHandler(async (req, res) => {
 
   res.status(200).json({ id: req.params.bookingId });
 });
+
+export const getBookings = asyncHandler(async (req, res) => {
+  const { year, month } = req.query;
+  const yearInt = parseInt(year);
+  const monthInt = parseInt(month);
+
+  const startDate = new Date(yearInt, monthInt - 1, 1);
+  const endDate = new Date(yearInt, monthInt, 0);
+
+  const bookings = await Booking.find({
+    dateOfJourney: { $gte: startDate, $lte: endDate },
+  });
+
+  if (bookings.length === 0) {
+    throw new Error("Bookings not found.");
+  }
+
+  res.status(200).json(bookings);
+});

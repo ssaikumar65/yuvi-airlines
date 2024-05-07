@@ -19,20 +19,22 @@ const Header = () => {
         Yuvi Airlines
       </Link>
 
-      <ul className="navbar-nav">
-        <li className="nav-item">
-          <Link className="nav-link" to="/viewFlights">
-            View and Book Flight
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="/viewBookings">
-            View Bookings
-          </Link>
-        </li>
-      </ul>
+      {user && !user.isAdmin ? (
+        <ul className="navbar-nav">
+          <li className="nav-item">
+            <Link className="nav-link" to="/viewFlights">
+              View and Book Flight
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/viewBookings">
+              View Bookings
+            </Link>
+          </li>
+        </ul>
+      ) : null}
 
-      {user && (
+      {user ? (
         <ul
           style={{ alignItems: "center", gap: "12px" }}
           className="navbar-nav"
@@ -49,6 +51,10 @@ const Header = () => {
             </button>
           </li>
         </ul>
+      ) : (
+        <Link className="nav-link" to="/admin">
+          <button className="btn btn-primary">Admin</button>
+        </Link>
       )}
     </nav>
   );

@@ -22,13 +22,18 @@ const AuthForm = ({ type }) => {
       .post(url, userData)
       .then((response) => {
         login(response.data);
-        navigate("/viewFlights");
+        console.log(response.data);
         setSuccessMessage(
           type === "login"
             ? "User logged in successfully!!"
             : "User created successfully!!"
         );
         setErrorMessage("");
+        if (response.data.isAdmin) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/viewFlights");
+        }
       })
       .catch((error) => {
         if (error.response.status === 400) {
