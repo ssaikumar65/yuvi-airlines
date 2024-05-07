@@ -18,6 +18,10 @@ const bookingSchema = new Schema(
       type: Number,
       required: true,
     },
+    dateOfJourney: {
+      type: Date,
+      required: true,
+    },
   },
   {
     timestamps: true,

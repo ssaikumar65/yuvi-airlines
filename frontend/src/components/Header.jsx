@@ -4,19 +4,22 @@ import { useAuth } from "../context/AuthContext";
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const onLogout = () => {
+
+  const handleLogout = () => {
     logout(null);
     navigate("/");
   };
+
   return (
     <nav
       style={{ padding: "12px 64px", justifyContent: "space-between" }}
-      className=" navbar navbar-expand-lg navbar-light bg-custom"
+      className="navbar navbar-expand-lg navbar-light bg-custom"
     >
-      <ul style={{ alignItems: "center" }} className="navbar-nav">
-        <Link to={"/"} className=" navbar-brand">
-          Yuvi Airlines
-        </Link>
+      <Link to={"/"} className="navbar-brand">
+        Yuvi Airlines
+      </Link>
+
+      <ul className="navbar-nav">
         <li className="nav-item">
           <Link className="nav-link" to="/viewFlights">
             View and Book Flight
@@ -28,19 +31,25 @@ const Header = () => {
           </Link>
         </li>
       </ul>
-      {user ? (
+
+      {user && (
         <ul
           style={{ alignItems: "center", gap: "12px" }}
           className="navbar-nav"
         >
-          <li style={{ fontWeight: "600" }} className="nav-item">
+          <li
+            className="nav-item"
+            style={{ fontWeight: "600", marginRight: "12px" }}
+          >
             Welcome {user.name}!
           </li>
-          <button className="btn btn-danger" onClick={onLogout}>
-            Logout
-          </button>
+          <li className="nav-item">
+            <button className="btn btn-danger" onClick={handleLogout}>
+              Logout
+            </button>
+          </li>
         </ul>
-      ) : null}
+      )}
     </nav>
   );
 };

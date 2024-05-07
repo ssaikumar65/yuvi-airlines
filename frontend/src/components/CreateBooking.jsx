@@ -13,63 +13,55 @@ const CreateBooking = () => {
   const [flight, setFlight] = useState({});
   const [form, setForm] = useState({
     customerId: user.username || "",
-    flightId: flight.flightId || "",
-    noOfTickets: "",
-    bookingCost: "",
-  });
-  const [formErrorMessage, setFormErrorMessage] = useState({
-    customerId: "",
     flightId: "",
     noOfTickets: "",
     bookingCost: "",
+    dateOfJourney: "",
   });
-  const [formValid, setFormValid] = useState({
-    customerId: false,
-    flightId: true,
-    noOfTickets: false,
-    bookingCost: false,
-    buttonActive: false,
-  });
-
   const [errorMessage, setErrorMessage] = useState("");
+  const [formErrorMessage, setFormErrorMessage] = useState({});
+  const [formValid, setFormValid] = useState({});
 
   useEffect(() => {
     fetchFlight();
   }, []);
 
-  const fetchFlight = () => {
-    axios
-      .get(flightUrl + "/" + flightId)
-      .then((response) => {
-        const data = response.data;
-        setFlight(data[0]);
-        setForm(data[0]);
-        setErrorMessage("");
-      })
-      .catch((error) => {
-        if (error.response === undefined) {
-          setErrorMessage("Start your JSON server");
-        } else if (error.response.status === 500) {
-          setErrorMessage("Could not fetch flights data");
-        } else {
-          setErrorMessage("Something went wrong");
-        }
-      });
+  const fetchFlight = async () => {
+    try {
+      const response = await axios.get(`${flightUrl}/${flightId}`);
+      const data = response.data[0];
+      setFlight(data);
+      setForm((prevForm) => ({
+        ...prevForm,
+        flightId: data.flightId,
+        bookingCost: data.fare,
+      }));
+      setErrorMessage("");
+    } catch (error) {
+      if (!error.response) {
+        setErrorMessage("Start your JSON server");
+      } else if (error.response.status === 500) {
+        setErrorMessage("Could not fetch flights data");
+      } else {
+        setErrorMessage("Something went wrong");
+      }
+    }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     navigate("/bookFlight/payment", {
-      state: { flight, noOfTickets: form.noOfTickets },
+      state: {
+        flight,
+        noOfTickets: form.noOfTickets,
+        dateOfJourney: form.dateOfJourney,
+      },
     });
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setForm({
-      ...form,
-      [name]: value,
-    });
+    setForm((prevForm) => ({ ...prevForm, [name]: value }));
     validateField(name, value);
   };
 
@@ -79,23 +71,30 @@ const CreateBooking = () => {
 
     switch (fieldName) {
       case "noOfTickets":
-        if (value === "") {
-          newFormErrorMessage.noOfTickets = "Field is required";
-          newFormValid.noOfTickets = false;
-        } else if (value <= 0 || value > 10) {
+        if (value === "" || value <= 0 || value > 10) {
           newFormErrorMessage.noOfTickets =
-            "No of tickets should be greater than 0 and less than 10";
+            "No of tickets should be between 1 and 10";
           newFormValid.noOfTickets = false;
         } else {
           newFormErrorMessage.noOfTickets = "";
           newFormValid.noOfTickets = true;
         }
         break;
+      case "dateOfJourney":
+        if (value === "") {
+          newFormErrorMessage.dateOfJourney = "Field is required";
+          newFormValid.dateOfJourney = false;
+        } else {
+          newFormErrorMessage.dateOfJourney = "";
+          newFormValid.dateOfJourney = true;
+        }
+        break;
       default:
         break;
     }
 
-    newFormValid.buttonActive = newFormValid.noOfTickets;
+    newFormValid.buttonActive =
+      newFormValid.noOfTickets && newFormValid.dateOfJourney;
 
     setFormErrorMessage(newFormErrorMessage);
     setFormValid(newFormValid);
@@ -113,9 +112,9 @@ const CreateBooking = () => {
             <div className="card-body">
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                  <span>Flight Name : {form.aircraftName}</span>
+                  <span>Flight Name : {flight.aircraftName}</span>
                   <p className="card-text">
-                    {flight.source} {" -----> "} {flight.destination}
+                    {flight.source} {"----->"} {flight.destination}
                   </p>
                 </div>
 
@@ -125,14 +124,9 @@ const CreateBooking = () => {
                     type="text"
                     id="customerId"
                     className="form-control"
-                    value={user.username || ""}
-                    onChange={handleChange}
-                    name="customerId"
+                    value={form.customerId}
                     disabled
                   />
-                  <span name="customerIdError" className="text-danger">
-                    {formErrorMessage.customerId}
-                  </span>
                 </div>
 
                 <div className="form-group">
@@ -141,8 +135,7 @@ const CreateBooking = () => {
                     type="text"
                     id="flightId"
                     className="form-control"
-                    value={form.flightId || ""}
-                    name="flightId"
+                    value={form.flightId}
                     disabled
                   />
                 </div>
@@ -154,12 +147,9 @@ const CreateBooking = () => {
                     name="bookingCost"
                     id="bookingCost"
                     className="form-control"
-                    value={form.fare || ""}
+                    value={form.bookingCost}
                     disabled
                   />
-                  <span name="bookingCostError" className="text-danger">
-                    {formErrorMessage.bookingCost}
-                  </span>
                 </div>
 
                 <div className="form-group">
@@ -169,12 +159,27 @@ const CreateBooking = () => {
                     name="noOfTickets"
                     id="noOfTickets"
                     className="form-control"
-                    value={form.noOfTickets || ""}
+                    value={form.noOfTickets}
                     onChange={handleChange}
                     placeholder="min-1 max-10"
                   />
-                  <span name="noOfTicketsError" className="text-danger">
+                  <span className="text-danger">
                     {formErrorMessage.noOfTickets}
+                  </span>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="dateOfJourney">Date of journey:</label>
+                  <input
+                    type="date"
+                    name="dateOfJourney"
+                    id="dateOfJourney"
+                    className="form-control"
+                    value={form.dateOfJourney}
+                    onChange={handleChange}
+                  />
+                  <span className="text-danger">
+                    {formErrorMessage.dateOfJourney}
                   </span>
                 </div>
 
@@ -183,18 +188,13 @@ const CreateBooking = () => {
                     type="submit"
                     disabled={!formValid.buttonActive}
                     className="btn btn-primary"
-                    id="bookingBtn"
                   >
                     Checkout
                   </button>
                 </div>
               </form>
               <div align="center">
-                <span
-                  name="errorMessage"
-                  id="errorMessage"
-                  className="text text-danger"
-                >
+                <span id="errorMessage" className="text text-danger">
                   {errorMessage}
                 </span>
               </div>

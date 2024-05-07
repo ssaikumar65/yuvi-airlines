@@ -13,28 +13,25 @@ const ViewAllFlights = () => {
     fetchFlights();
   }, []);
 
-  const fetchFlights = () => {
-    axios
-      .get(url)
-      .then((response) => {
-        const data = response.data;
-        setFlights(data);
-        setErrorMessage("");
-      })
-      .catch((error) => {
-        if (error.response === undefined) {
-          setErrorMessage("Internal Server Error");
-        } else if (error.response.status === 404) {
-          setErrorMessage("Could not fetch flights data!");
-        } else {
-          setErrorMessage("Something went wrong");
-        }
-      });
+  const fetchFlights = async () => {
+    try {
+      const response = await axios.get(url);
+      setFlights(response.data);
+      setErrorMessage("");
+    } catch (error) {
+      if (!error.response) {
+        setErrorMessage("Internal Server Error");
+      } else if (error.response.status === 404) {
+        setErrorMessage("Could not fetch flights data!");
+      } else {
+        setErrorMessage("Something went wrong");
+      }
+    }
   };
 
   return (
     <div className="container p-3">
-      {flights.length > 0 && (
+      {flights.length > 0 ? (
         <div className="row">
           {flights.map((flight) => (
             <div className="col-md-4 col-sm-6 mb-3" key={flight.flightId}>
@@ -70,9 +67,7 @@ const ViewAllFlights = () => {
                     <button
                       disabled={flight.status.toLowerCase() === "cancelled"}
                       className="btn btn-primary btn-md btn-block"
-                      onClick={() => {
-                        navigate("/bookFlight/" + flight.flightId);
-                      }}
+                      onClick={() => navigate("/bookFlight/" + flight.flightId)}
                     >
                       Book
                     </button>
@@ -83,12 +78,13 @@ const ViewAllFlights = () => {
             </div>
           ))}
         </div>
+      ) : (
+        <div align="center">
+          <span className="text text-danger">
+            {errorMessage || "Loading..."}
+          </span>
+        </div>
       )}
-      <div align="center">
-        <span name="errorMessage" className="text text-danger">
-          {errorMessage}
-        </span>
-      </div>
     </div>
   );
 };

@@ -3,8 +3,15 @@ import Booking from "../models/booking.js";
 import User from "../models/user.js";
 
 export const createBooking = asyncHandler(async (req, res) => {
-  const { customerId, flightId, noOfTickets, bookingCost } = req.body;
-  if (!customerId || !flightId || !noOfTickets || !bookingCost) {
+  const { customerId, flightId, noOfTickets, bookingCost, dateOfJourney } =
+    req.body;
+  if (
+    !customerId ||
+    !flightId ||
+    !noOfTickets ||
+    !bookingCost ||
+    !dateOfJourney
+  ) {
     res.status(400);
     throw new Error("Please add all the fields");
   }
@@ -14,6 +21,7 @@ export const createBooking = asyncHandler(async (req, res) => {
     flightId,
     noOfTickets,
     bookingCost,
+    dateOfJourney,
   });
   if (booking) {
     res.status(201).json(booking);

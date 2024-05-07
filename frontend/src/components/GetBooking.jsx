@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+
 const url = "http://localhost:5000/api/bookings";
 
 const GetBookings = () => {
@@ -56,7 +57,7 @@ const GetBookings = () => {
   return (
     <div className="GetBooking">
       <div className="row">
-        <div className="col-md-6 offset-md-3">
+        <div className="col-md-8 offset-md-2">
           <br />
           <div className="card">
             <div className="card-header bg-custom">
@@ -77,6 +78,7 @@ const GetBookings = () => {
                       <th>Booking Id</th>
                       <th>Total tickets</th>
                       <th>Total cost</th>
+                      <th>Date of Journey</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -87,6 +89,7 @@ const GetBookings = () => {
                         <td>{booking._id}</td>
                         <td>{booking.noOfTickets}</td>
                         <td>{booking.bookingCost}</td>
+                        <td>{booking.dateOfJourney.slice(0, 10)}</td>
                         <td>
                           <button
                             type="button"

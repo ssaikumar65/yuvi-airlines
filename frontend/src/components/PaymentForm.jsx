@@ -1,46 +1,49 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+
 const bookingUrl = "http://localhost:5000/api/bookings";
 
 const PaymentForm = () => {
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCVV] = useState("");
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+  });
+  const [message, setMessage] = useState("");
   const { user } = useAuth();
-
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
   const location = useLocation();
   const flight = location.state.flight;
   const noOfTickets = location.state.noOfTickets;
+  const dateOfJourney = location.state.dateOfJourney;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPaymentDetails({
+      ...paymentDetails,
+      [name]: value,
+    });
+  };
 
   const submitBooking = () => {
     const bookingCost = flight.fare * noOfTickets;
 
-    const newForm = {
+    const newBooking = {
       customerId: user.username,
       flightId: flight.flightId,
       noOfTickets: noOfTickets,
       bookingCost,
+      dateOfJourney,
     };
 
     axios
-      .post(bookingUrl, newForm)
+      .post(bookingUrl, newBooking)
       .then(() => {
-        setSuccessMessage("Booking done successfully!!");
-        setErrorMessage("");
+        setMessage("Booking done successfully!!");
       })
       .catch((error) => {
-        if (error.response === undefined) {
-          setErrorMessage("Something went wrong");
-          setSuccessMessage("");
-        } else if (error.response.status === 404) {
-          setErrorMessage("Booking Failed!");
-          setSuccessMessage("");
-        }
+        setMessage("Booking Failed!");
       });
   };
 
@@ -48,6 +51,7 @@ const PaymentForm = () => {
     e.preventDefault();
     submitBooking();
   };
+
   return (
     <div className="row">
       <div className="col-md-6 offset-md-3">
@@ -62,10 +66,11 @@ const PaymentForm = () => {
                 type="text"
                 className="form-control"
                 id="cardNumber"
+                name="cardNumber"
                 placeholder="Enter card number"
-                value={cardNumber}
+                value={paymentDetails.cardNumber}
                 maxLength={16}
-                onChange={(e) => setCardNumber(e.target.value)}
+                onChange={handleInputChange}
               />
             </div>
 
@@ -76,10 +81,11 @@ const PaymentForm = () => {
                 type="text"
                 className="form-control"
                 id="expiryDate"
+                name="expiryDate"
                 placeholder="MM/YY"
                 maxLength={5}
-                value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
+                value={paymentDetails.expiryDate}
+                onChange={handleInputChange}
               />
             </div>
 
@@ -90,10 +96,11 @@ const PaymentForm = () => {
                 type="text"
                 className="form-control"
                 id="cvv"
+                name="cvv"
                 placeholder="Enter CVV"
-                value={cvv}
+                value={paymentDetails.cvv}
                 maxLength={3}
-                onChange={(e) => setCVV(e.target.value)}
+                onChange={handleInputChange}
               />
             </div>
 
@@ -103,18 +110,11 @@ const PaymentForm = () => {
           </form>
           <div align="center">
             <span
-              name="successMessage"
-              id="successMessage"
-              className="text text-success"
+              className={
+                message.includes("success") ? "text-success" : "text-danger"
+              }
             >
-              {successMessage}
-            </span>
-            <span
-              name="errorMessage"
-              id="errorMessage"
-              className="text text-danger"
-            >
-              {errorMessage}
+              {message}
             </span>
           </div>
         </div>
