@@ -22,7 +22,6 @@ const AuthForm = ({ type }) => {
       .post(url, userData)
       .then((response) => {
         login(response.data);
-        console.log(response.data);
         setSuccessMessage(
           type === "login"
             ? "User logged in successfully!!"
@@ -52,6 +51,11 @@ const AuthForm = ({ type }) => {
       });
   };
 
+  const nameId = `${type}-name`;
+  const usernameId = `${type}-username`;
+  const passwordId = `${type}-password`;
+  const authBtnId = `${type}-authBtn`;
+
   return (
     <div className="card">
       <div className="card-header bg-custom">
@@ -69,10 +73,10 @@ const AuthForm = ({ type }) => {
         >
           {type === "register" && (
             <div className="form-group">
-              <label htmlFor="name">Name</label>
+              <label htmlFor={nameId}>Name</label>
               <input
                 type="text"
-                id="name"
+                id={nameId}
                 className="form-control"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -83,10 +87,10 @@ const AuthForm = ({ type }) => {
           )}
 
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor={usernameId}>Username</label>
             <input
               type="text"
-              id="username"
+              id={usernameId}
               className="form-control"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -96,10 +100,10 @@ const AuthForm = ({ type }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor={passwordId}>Password</label>
             <input
               type="password"
-              id="password"
+              id={passwordId}
               className="form-control"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -109,7 +113,7 @@ const AuthForm = ({ type }) => {
           </div>
 
           <div className="form-group">
-            <button type="submit" className="btn btn-primary" id="authBtn">
+            <button type="submit" className="btn btn-primary" id={authBtnId}>
               {type === "login" ? "Login" : "Register"}
             </button>
           </div>
